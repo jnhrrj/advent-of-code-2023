@@ -204,18 +204,18 @@ Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83
 Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
 Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11`;
 
+const inputRows = input.split("\n");
+
+const anyNumberOfSpacesPattern = /\s+/;
+
 //////////////////////////////////
 ////          PART 1          ////
 //////////////////////////////////
 
 // Conclusion: onced /\s+/ regex once more. A hundred more times and I know it by heart already
-// Easier then expected compared with day 3's challenge. Let's look at part 2
+// Easier then expected compared to day 3's challenge. Let's look at part 2
 
 let totalPoints = 0;
-
-const inputRows = input.split("\n");
-
-const anyNumberOfSpacesPattern = /\s+/;
 
 inputRows.forEach((card) => {
   let cardTotalPoints = 0;
@@ -237,5 +237,37 @@ console.log(totalPoints);
 //////////////////////////////////
 ////          PART 2          ////
 //////////////////////////////////
+
+// Create map of each card's id and the number of winning numbers it has
+const cardsWithWinningNumbers = new Map<number, number>();
+inputRows.forEach((card) => {
+  const [rawId, numbers] = card.split(":");
+  const [left, right] = numbers.split("|");
+  const winningNumbers = left.trim().split(anyNumberOfSpacesPattern);
+  const cardNumbers = right.trim().split(anyNumberOfSpacesPattern);
+
+  const id = parseInt(rawId.split(anyNumberOfSpacesPattern)[1]);
+  const numOfWinners = cardNumbers.filter((num) =>
+    winningNumbers.includes(num)
+  ).length;
+
+  cardsWithWinningNumbers.set(id, numOfWinners);
+});
+
+let totalScratchCards = 0;
+for (let id of cardsWithWinningNumbers.keys()) {
+  totalScratchCards += 1;
+  getFollowingCardIds(id);
+}
+
+// Recursively go through following cards while counting each one
+function getFollowingCardIds(id: number) {
+  const totalWinners = cardsWithWinningNumbers.get(id);
+  for (let i = id + 1; i < id + 1 + (totalWinners ?? 0); i++) {
+    totalScratchCards += 1;
+    getFollowingCardIds(i);
+  }
+}
+console.log(totalScratchCards);
 
 export default 4;
