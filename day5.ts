@@ -310,4 +310,37 @@ const locationNumbers = seeds.map((seed) =>
 
 console.log(Math.min(...locationNumbers));
 
+//////////////////////////////////
+////          PART 2          ////
+//////////////////////////////////
+
+// Approach 1. Too slow
+
+const seedRanges: number[][] = [];
+
+let pair: number[] = [];
+for (let [index, seed] of seeds.entries()) {
+  if (index % 2 === 0) {
+    pair = [seed];
+  } else {
+    pair.push(seed);
+    seedRanges.push(pair);
+  }
+}
+
+let lowestLocationNumber = Infinity;
+seedRanges.forEach(([start, range]) => {
+  for (let i = 0; i < range; i++) {
+    let seed = start + i;
+    const location = sections.reduce((acc, sectionRanges) => {
+      return originNumToDestinationNum(sectionRanges, acc);
+    }, seed);
+    if (location < lowestLocationNumber) lowestLocationNumber = location;
+  }
+});
+
+// Approach 2. Starting from behind
+
+console.log(lowestLocationNumber);
+
 export default 5;
